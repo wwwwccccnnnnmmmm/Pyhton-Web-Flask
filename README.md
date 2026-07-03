@@ -18,9 +18,9 @@ SQLite（数据库）
     [√] 3.1.3 搭建Flask框架
 
 ### 3.2用户认证功能实现
-    [] 3.2.1 登录功能 POST /auth/login
-    [] 3.2.2 注册功能 POST /auth/register
-    [] 3.2.3 登出功能 GET /auth/logout
+    [√] 3.2.1 登录功能 POST /auth/login
+    [√] 3.2.2 注册功能 POST /auth/register
+    [√] 3.2.3 登出功能 GET /auth/logout
     [] 3.2.4 个人资料 GET /auth/me
     
 ### 3.3 菜品管理功能实现
@@ -36,8 +36,8 @@ SQLite（数据库）
     [] 3.4.4 获取订单详情 GET /dishes/<id>
 
 ### 3.5 用户管理功能实现
-    [] 3.5.1 获取用户 GET /users/<id>
-    [] 3.6.2 新建用户 POST /users
-    [] 3.5.3 删除用户 DELETE /users/<id>
-    [] 3.5.4 修改用户 PUT /dishes/<id>
+    [√] 3.5.1 获取用户 GET /users/<id>
+    [√] 3.6.2 新建用户 POST /users
+    [√] 3.5.3 删除用户 DELETE /users/<id>
+    [√] 3.5.4 修改用户 PUT /dishes/<id>
         

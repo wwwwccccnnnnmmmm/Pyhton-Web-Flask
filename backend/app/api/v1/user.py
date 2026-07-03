@@ -83,6 +83,14 @@ def get_user_by_id(user_id):
     
     return user.to_dict(),200
 
+# 获取所有用户
+@user_bp.route("",methods=["GET"])
+def get_users():
+    users = User.query.all()
+    if users:
+        return "",200
+    
+    
 # 删除用户
 @user_bp.route("/<int:user_id>",methods=["DELETE"])
 def delete_user_by_id(user_id):

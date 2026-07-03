@@ -122,3 +122,9 @@ def register():
 @auth_bp.route("/logout",methods=["POST"])
 def logout():
     return {"message":"登出成功，清除本地Token"},200
+
+# 我的信息
+@auth_bp.route("/me",methods=["GET"])
+def get_current_user():
+    pass
+    

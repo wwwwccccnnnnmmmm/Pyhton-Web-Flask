@@ -27,7 +27,7 @@ class Dish(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
     # 外键 关联user表
-    user_id = db.Column(db.Integer,db.ForeignKey('users.id'),nullable=False)
+    user_id = db.Column(db.Integer,db.ForeignKey('users.id'),nullable=False, default=1)
     
     creator = db.relationship("User",back_populates='dishes',lazy=True)
     

@@ -69,19 +69,19 @@ def register():
     if not data:
         return {"error":"请求体必须要json格式"},400
     
-    username = data.get("username").strip()
-    password = data.get("password").strip()
+    username = data.get("username","").strip()
+    password = data.get("password","").strip()
     role = data.get("role", "customer").strip() or "customer"
-    real_name = data.get("real_name").strip() or None
-    phone = data.get("phone").strip() or None
+    real_name = data.get("real_name","").strip() or None
+    phone = data.get("phone","").strip() or None
     
     # 必填校验
     if not username or not password:
         return {"error":"用户名和密码不能为空"},400
     
     # 格式校验
-    if len(username)<6:
-        return {"error":"用户名长度至少6个字符"}, 422
+    if len(username)<3:
+        return {"error":"用户名长度至少3个字符"}, 422
     
     if len(password)<6:
         return {"error":"密码长度至少6位"}, 422
@@ -113,11 +113,7 @@ def register():
     return {
         "message":"用户创建成功",
         "user":{
-            "id":user.id,
-            "username":user.username,
-            "role":user.role,
-            "is_active":user.is_active,
-            "created_at":user.created_at.isoformat() if user.created_at else None
+            user.to_dict()
         
     }
         },201

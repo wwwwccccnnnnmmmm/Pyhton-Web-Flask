@@ -36,5 +36,11 @@ class User(db.Model):
             "role":self.role,
             "is_active":self.is_active,
             "created_at":self.created_at.isoformat() if self.created_at else None,
-            "updated_at":self.updated_at.isoformat()if self.updated_at else None
+            "updated_at":self.updated_at.isoformat()if self.updated_at else None,
+            "profile": {
+            "real_name": self.profile.real_name if self.profile else None,
+            "phone": self.profile.phone if self.profile else None,
+            "email": self.profile.email if self.profile else None,
+            "avatar_url": self.profile.avatar_url if self.profile else None
+        } if self.profile else None
         }

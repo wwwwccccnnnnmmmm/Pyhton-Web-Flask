@@ -17,10 +17,39 @@ def get_dish(dish_id):
     
 # 获取全部菜品
 @dish_bp.route("",methods=["GET"])
-def get_all_dishes(dish_id):
-    pass
-   
+def get_dishes():
     
+    # 获取分页参数
+    page = request.args.get("page",1,type=int)
+    per_page = request.args.get("per_page",10,type=int)
+    
+    # 获取过滤参数
+    keyword = request.args.get("keyword","").strip()
+    is_sold_out_str= request.args.get("is_sold_out")
+    
+    # 构建查询
+    query = Dish.query
+    if keyword:
+        query = query.filter(Dish.dish_name.contains(keyword))
+    
+    if is_sold_out_str is not None:
+        is_sold_out = is_sold_out_str.lower() in ("true","1")
+        query = query.filter_by(is_sold_out=is_sold_out)
+    # 分页执行
+    paginated = query.order_by(Dish.id.desc()).paginate(page=page,per_page=per_page,error_out=False)
+    
+    # 返回结果
+    return {
+        "items":[dish.to_dict() for dish in paginated.items],
+        "total":paginated.total,
+        "page":page,
+        "per_page":per_page,
+        "pages":paginated.pages,
+        "has_next":paginated.has_next,
+        "has_prev":paginated.has_prev
+    },200
+        
+
 # 添加菜品
 @dish_bp.route("",methods=["POST"])
 def create_dish():

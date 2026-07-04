@@ -28,19 +28,19 @@ SQLite（数据库）
     [√] 3.3.2 增加菜品 POST /dishes
     [√] 3.3.3 删除菜品 DELETE /dishes/<id>
     [√] 3.3.4 修改菜品 PATCH /dishes/<id>
-    [] 3.3.5 获取所有菜品 GET /dishes
+    [√] 3.3.5 获取所有菜品 GET /dishes
 
 ### 3.4 订单管理功能实现
     [√] 3.4.1 获取订单 GET /orders/<id>
     [√] 3.4.2 新建订单 POST /orders
     [√] 3.4.3 删除订单 DELETE /orders/<id>
     [√] 3.4.4 修改订单 GET /orders/<id>
-    [] 3.4.5 获取所有订单 GET /orders
+    [√] 3.4.5 获取所有订单 GET /orders
 
 ### 3.5 用户管理功能实现
     [√] 3.5.1 获取用户 GET /users/<id>
     [√] 3.6.2 新建用户 POST /users
     [√] 3.5.3 删除用户 DELETE /users/<id>
     [√] 3.5.4 修改用户 PATCH /users/<id>
-    [] 3.5.5 获取所有用户 GET /users
+    [√] 3.5.5 获取所有用户 GET /users
         

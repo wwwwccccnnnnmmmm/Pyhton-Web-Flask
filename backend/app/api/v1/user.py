@@ -74,7 +74,7 @@ def create_user():
     },201
 # 获取用户
 @user_bp.route("/<int:user_id>",methods=["GET"])
-def get_user_by_id(user_id):
+def get_user(user_id):
     
     user = User.query.filter_by(id=user_id).first()
     
@@ -86,10 +86,40 @@ def get_user_by_id(user_id):
 # 获取所有用户
 @user_bp.route("",methods=["GET"])
 def get_users():
-    users = User.query.all()
-    if users:
-        return "",200
     
+    # 获取分页参数
+    page = request.args.get("page",1,type=int)
+    per_page = request.args.get("per_page",10,type=int)
+    
+    # 获取过滤参数
+    keyword=request.args.get("keyword","").strip()
+    role=request.args.get("role","").strip()
+    is_active_str = request.args.get("is_active")
+    
+    # 构建查询
+    query = User.query
+    if keyword:
+        query = query.filter(User.username.contains(keyword))
+    if role:
+        query = query.filter_by(role=role)
+    
+    if is_active_str is not None:
+        is_active = is_active_str.lower() in ('true', '1')
+        query = query.filter_by(is_active=is_active)
+
+    # 分页执行
+    paginated = query.order_by(User.id.desc()).paginate(page=page,per_page=per_page,error_out=False)
+    
+    return {
+        "items":[user.to_dict() for user in paginated.items],
+        "total":paginated.total,
+        "page":page,
+        "per_page":per_page,
+        "pages":paginated.pages,
+        "has_next":paginated.has_next,
+        "has_prev":paginated.has_prev
+        
+    }
     
 # 删除用户
 @user_bp.route("/<int:user_id>",methods=["DELETE"])

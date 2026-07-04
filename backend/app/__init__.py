@@ -18,7 +18,7 @@ def create_app():
     app.register_blueprint(user_bp, url_prefix='/api/v1/users')
     app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')
     app.register_blueprint(dish_bp, url_prefix='/api/v1/dishes')
-    app.register_blueprint(order_bp,url_prefix='api/v1/orders')
+    app.register_blueprint(order_bp,url_prefix='/api/v1/orders')
     
     init_cli(app)
     return app

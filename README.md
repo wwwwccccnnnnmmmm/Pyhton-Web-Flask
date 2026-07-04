@@ -31,10 +31,10 @@ SQLite（数据库）
     [] 3.3.5 获取所有菜品 GET /dishes
 
 ### 3.4 订单管理功能实现
-    [] 3.4.1 获取订单 GET /orders/<id>
-    [] 3.4.2 新建订单 POST /orders
-    [] 3.4.3 删除订单 DELETE /orders/<id>
-    [] 3.4.4 获取订单详情 GET /orders/<id>
+    [√] 3.4.1 获取订单 GET /orders/<id>
+    [√] 3.4.2 新建订单 POST /orders
+    [√] 3.4.3 删除订单 DELETE /orders/<id>
+    [√] 3.4.4 修改订单 GET /orders/<id>
     [] 3.4.5 获取所有订单 GET /orders
 
 ### 3.5 用户管理功能实现

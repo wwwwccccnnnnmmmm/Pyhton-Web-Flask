@@ -1,6 +1,6 @@
 from flask import Flask
 from .config import Config
-from .api.v1 import user_bp,auth_bp,dish_bp
+from .api.v1 import user_bp,auth_bp,dish_bp,order_bp
 from .extensions import db
 from .cli import init_app as init_cli
 def create_app():
@@ -18,6 +18,7 @@ def create_app():
     app.register_blueprint(user_bp, url_prefix='/api/v1/users')
     app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')
     app.register_blueprint(dish_bp, url_prefix='/api/v1/dishes')
+    app.register_blueprint(order_bp,url_prefix='api/v1/orders')
     
     init_cli(app)
     return app

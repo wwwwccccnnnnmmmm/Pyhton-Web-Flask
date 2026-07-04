@@ -13,13 +13,13 @@ class Order(db.Model):
     # 订单编号
     orders_number=db.Column(db.String(20),unique=True,nullable=False)
 
-    # 是否截单
+    # 是否结单
     is_finished = db.Column(db.Boolean,nullable=False,default=False)
     
     # 添加时间
     created_at=db.Column(db.DateTime,default=datetime.now)
     
-    # 截单时间
+    # 结单时间
     finished_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
     # 外键 关联user表

@@ -11,7 +11,7 @@ class Order(db.Model):
     id=db.Column(db.Integer,primary_key=True,autoincrement=True)
     
     # 订单编号
-    orders_number=db.Column(db.String(20),unique=True,nullable=False)
+    order_number=db.Column(db.String(20),unique=True,nullable=False)
 
     # 是否结单
     is_finished = db.Column(db.Boolean,nullable=False,default=False)

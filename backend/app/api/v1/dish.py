@@ -69,13 +69,16 @@ def create_dish():
         return {"error":"请求体必须为 JSON 格式"},400
     
     dish_name = data.get("dish_name","").strip()
-    price_str = data.get("price",0)
-    dish_number_str = data.get("dish_number",0)
+    price_str = data.get("price","").strip()
+    dish_number_str = data.get("dish_number","").strip()
 
     # 必填校验
     if not dish_name or not price_str or not dish_number_str:
         return {"error":"必填项不能为空"},400
     
+    # 重复校验
+    if Dish.query.filter_by(dish_name=dish_name).first():
+        return {"error":"名称已存在"},409
     try:
         price=float(price_str)
         dish_number= int(dish_number_str)
@@ -100,7 +103,7 @@ def update_dish(dish_id):
     dish = Dish.query.get(dish_id)
     
     if not dish:
-        return {"error":"请求资源不存在"},404
+        return {"error":"资源不存在"},404
         
     data = request.get_json()
     
@@ -108,7 +111,12 @@ def update_dish(dish_id):
         return {"error":"请求体必须为json格式"},400
     
     if 'dish_name' in data:
-        dish.dish_name = data["dish_name"].strip()
+        new_name = data["dish_name"].strip()
+        existing = Dish.query.filter(Dish.dish_name==new_name,Dish.id!=dish_id).first()
+        if existing:
+            return {"error":"菜品名称已被其他菜品占用"},409
+        dish.dish_name = new_name
+        
     if 'price' in data:
         try:
             dish.price = float(data["price"])

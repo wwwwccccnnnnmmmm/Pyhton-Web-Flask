@@ -8,7 +8,7 @@ user_bp = Blueprint('user',__name__)
 
 
 # 新建用户
-@user_bp.route("/create_user",methods=["POST"])
+@user_bp.route("",methods=["POST"])
 def create_user():
     '''
     后台创建用户
@@ -40,16 +40,15 @@ def create_user():
     if len(password)<6:
         return {"error":"密码长度至少6位"},400
     
+    #唯一性校验
+    existing = User.query.filter_by(username=username).first()
+    if existing:
+        return{"error":"该用户名已被占用"},409
+    
     # 职位是否不对
     allow_roles=["waiter","customer"]
-    
     if role not in allow_roles:
         return {"error":f"职位必须是{",".join(allow_roles)}其中之一"},422
-    
-    #唯一性校验
-    
-    if User.query.filter_by(username=username).first():
-        return{"error":"该用户名已被占用"},409
     
     # 密码哈希
     hash_password = generate_password_hash(password)
@@ -154,7 +153,14 @@ def update_user(user_id):
         return {"error":"请求体必须为json格式"},400
     
     if 'username'in data:
-        user.username=data["username"]
+        new_name = data["username"].strip()
+        
+        # 唯一性校验
+        existing = User.query.filter(User.username==new_name,User.id!=user_id).first()
+        if existing:
+            return {"error":"用户名已被其他用户占用"},409
+        
+        user.username=new_name
     if 'password'in data:
         user.password_hash=generate_password_hash(data["password"])
     

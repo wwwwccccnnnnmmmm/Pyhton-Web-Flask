@@ -84,6 +84,11 @@ def create_order():
     if not dishes_data or not isinstance(dishes_data,list):
         return {"error":"请提供有效的菜品列表"},400
 
+    # 唯一性校验
+    existing = Order.query.filter(Order.order_number==order_number).first()
+    if existing:
+        return {"error":"该订单编号已被占用"},409
+    
     order = Order(order_number=order_number)
     
     dish_object = []

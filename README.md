@@ -8,7 +8,7 @@ python3.X
 Flask
 Flask-sqlalchemy（ORM映射）
 pyJWT(用户认证)
-SQLite（数据库）
+SQLite（数据库）    
 
 ## 3.功能开发路线图
 
@@ -34,7 +34,7 @@ SQLite（数据库）
     [√] 3.4.1 获取订单 GET /orders/<id>
     [√] 3.4.2 新建订单 POST /orders
     [√] 3.4.3 删除订单 DELETE /orders/<id>
-    [√] 3.4.4 修改订单 GET /orders/<id>
+    [√] 3.4.4 修改订单 PATCH /orders/<id>
     [√] 3.4.5 获取所有订单 GET /orders
 
 ### 3.5 用户管理功能实现
@@ -43,4 +43,29 @@ SQLite（数据库）
     [√] 3.5.3 删除用户 DELETE /users/<id>
     [√] 3.5.4 修改用户 PATCH /users/<id>
     [√] 3.5.5 获取所有用户 GET /users
-        
+
+### 3.6鉴权说明
+本项目使用 JWT（JSON Web Token）实现用户认证、所有需要的登录的接口均需在请求头携带Token。
+
+#### 3.6.1获取Token
+用户登录成功后，服务端返回'access_token',格式如下：
+{
+    "access_token":"euJ113kkeaweaweaeaewaea",
+    "token_type":"Bearer",
+    "user":{
+        "id":1,
+        "username":"zhangsan",
+        "role":"admin"
+    }
+}
+### 3.6.2受保护接口清单
+模块        接口        方法        权限要求
+用户    auth/me         GET         登录
+用户    users/<id>      PATCH       管理员
+用户    users/<id>      DELETE      管理员
+菜品    dishes/<id>     PATCH       管理员
+菜品    dishes/<id>     DELETE      管理员
+菜品    dishes/<id>     DELETE      管理员
+用户    auth/orders       GET         登录
+订单    orders/me       GET         登录
+

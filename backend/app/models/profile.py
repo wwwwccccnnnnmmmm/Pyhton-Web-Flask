@@ -16,7 +16,7 @@ class Profile(db.Model):
     employee_id = db.Column(db.String(20),nullable=True,unique=True)
     position=db.Column(db.String(20), nullable=True)
     # onupdate=datetime.now更新记录时，自动将时间改为当前时间。
-    updated_at=db.Column(db.DateTime,default=datetime.now,onupdate=datetime.now)
+    updated_at=db.Column(db.DateTime,default=lambda: datetime.now(),onupdate=lambda: datetime.now())
     
     # 外键 关联用户表
     user_id = db.Column(db.Integer,db.ForeignKey("users.id"), unique=True,nullable=False)

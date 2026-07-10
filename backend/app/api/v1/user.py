@@ -2,13 +2,15 @@ from flask import Blueprint,request
 from ...models import User,Profile
 from werkzeug.security import check_password_hash,generate_password_hash
 from ...extensions import db
-
+from ...utils import token_required,admin_required
 
 user_bp = Blueprint('user',__name__)
 
 
 # 新建用户
 @user_bp.route("",methods=["POST"])
+@admin_required
+@token_required
 def create_user():
     '''
     后台创建用户
@@ -73,6 +75,8 @@ def create_user():
     },201
 # 获取用户
 @user_bp.route("/<int:user_id>",methods=["GET"])
+@admin_required
+@token_required
 def get_user(user_id):
     
     user = User.query.filter_by(id=user_id).first()
@@ -84,6 +88,8 @@ def get_user(user_id):
 
 # 获取所有用户
 @user_bp.route("",methods=["GET"])
+@admin_required
+@token_required
 def get_users():
     
     # 获取分页参数
@@ -122,6 +128,8 @@ def get_users():
     
 # 删除用户
 @user_bp.route("/<int:user_id>",methods=["DELETE"])
+@admin_required
+@token_required
 def delete_user_by_id(user_id):
     user = User.query.filter_by(id=user_id).first()
     
@@ -141,6 +149,8 @@ def delete_user_by_id(user_id):
 
 # 修改用户
 @user_bp.route("/<int:user_id>",methods=["PATCH"])
+@admin_required
+@token_required
 def update_user(user_id):
     user = User.query.filter_by(id=user_id).first()
     

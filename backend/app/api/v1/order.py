@@ -1,11 +1,14 @@
 from flask import Blueprint,request
 from ...extensions import db
 from ...models import Order,Dish
+from ...utils import generate_order_number,token_required,admin_required
 
 order_bp = Blueprint("order",__name__)
 
 # 获取订单
 @order_bp.route("/<int:order_id>",methods=["GET"])
+@admin_required
+@token_required
 def get_order(order_id):
     
     order = Order.query.get(order_id)
@@ -13,9 +16,32 @@ def get_order(order_id):
         return {"error":"资源不存在"},404
     
     return order.to_dict(),200
+
+# 获取某一个用户的订单
+@order_bp.route("/my",methods=["GET"])
+@token_required
+def get_my_orders(current_user_id):
+    page = request.args.get("page",1,type=int)
+    per_page = request.args.get("per_page",10,type=int)
+    
+    paginated = Order.query.filter_by(user_id=current_user_id)\
+    .order_by(Order.created_at.desc())\
+    .paginate(page=page,per_page=per_page,error_out=False)
+    
+    return {
+        "user_id":current_user_id,
+        "orders":[order.to_dict() for order in paginated.items],
+        "total":paginated.total,
+        "page":page,
+        "per_page":per_page,
+        "pages":paginated.pages
+    },200
+    
     
 # 获取所有订单
 @order_bp.route("",methods=["GET"])
+@admin_required
+@token_required
 def get_orders():
     
     # 获取分页参数
@@ -50,7 +76,8 @@ def get_orders():
 
 # 创建订单
 @order_bp.route("",methods=["POST"])
-def create_order():
+@token_required
+def create_order(current_user_id):
     
     '''
     请求体：
@@ -68,47 +95,64 @@ def create_order():
         ]
     }
     '''
-    
+
     data = request.get_json()
     
     if not data:
         return {"error":"请求体必须为json格式"},400
     
-    order_number = data.get("order_number","").strip()
+    order_number = generate_order_number()
+    
+    while Order.query.filter_by(order_number=order_number).first():
+        order_number = generate_order_number()
+
     dishes_data = data.get("dishes",[])
     
     # 必填校验
     if not order_number:
         return {"error":"订单编号不能为空"},400
-    
+
     if not dishes_data or not isinstance(dishes_data,list):
         return {"error":"请提供有效的菜品列表"},400
 
-    # 唯一性校验
-    existing = Order.query.filter(Order.order_number==order_number).first()
-    if existing:
-        return {"error":"该订单编号已被占用"},409
+    order = Order(order_number=order_number,user_id=current_user_id)
     
-    order = Order(order_number=order_number)
     
-    dish_object = []
-    # 遍历菜品
+    # 遍历菜品避免不存在某些菜
     for item in dishes_data:
         dish_name = item.get("dish_name","").strip()
-        price = item.get("price",0)
+        quantity = item.get("quantity", 1)
         
-        if not dish_name or not price:
-            return {"error":"每个菜品必须包含dish_name和price"},400
+        if not dish_name:
+            return {"error":"每个菜品必须包含dish_name"},400
+        
+        if not isinstance(quantity,int) or quantity<=0:
+            return {"error":f"菜品{dish_name}的数量必须是正整数"},400
         
         # 数据库查找
         dish = Dish.query.filter_by(dish_name=dish_name).first()
         
         if not dish:
             return {"error":"资源不存在"},404
+    
+    dish_object = []
+    total_price = 0.0
+    
+    # 遍历菜品进行价格相加
+    for item in dishes_data:
+        dish_name = item.get("dish_name","").strip()
+        quantity = item.get("quantity",1)
+
+        # 数据库查找
+        dish = Dish.query.filter_by(dish_name=dish_name).first()
+        
+        total_price +=dish.price * quantity
         
         dish_object.append(dish)
         
+    order.total_price = total_price
     order.dishes.extend(dish_object)
+    
     try:
         db.session.add(order)
         db.session.commit()
@@ -119,6 +163,8 @@ def create_order():
 
 # 修改订单
 @order_bp.route("/<int:order_id>",methods=["PATCH"])
+@admin_required
+@token_required
 def update_order(order_id):
     order = Order.query.get(order_id)
     
@@ -163,9 +209,24 @@ def update_order(order_id):
     
     return order.to_dict(),200
     
+# 用户取消订单
+@order_bp.route("/<int:order_id>/cancel",methods=["PATCH"])
+@token_required
+def canceled_order(current_user_id,order_id):
+    order = Order.query.get(order_id)
+    if not order:
+        return {"error":"资源不存在"},404
+    if order.user_id !=current_user_id:
+        return {"error":"无权操作此订单"},403
+    if order.status !='pending':
+        return {"error":"只有待付款订单可以取消"},400
+    order.status = 'calcened'
+    db.session.commit()
+    return {"message":"该订单已取消"},200
 
 # 删除订单
 @order_bp.route("/<int:order_id>",methods=["DELETE"])
+@token_required
 def delete_order(order_id):
     order = Order.query.get(order_id)
     

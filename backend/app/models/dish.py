@@ -21,10 +21,10 @@ class Dish(db.Model):
     is_sold_out=db.Column(db.Boolean, default=False)
     
     # 添加时间
-    created_at=db.Column(db.DateTime,default=datetime.now)
+    created_at=db.Column(db.DateTime,default=lambda: datetime.now())
     
     # 更新时间
-    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(), onupdate=lambda: datetime.now())
 
     # 外键 关联user表
     user_id = db.Column(db.Integer,db.ForeignKey('users.id'),nullable=False, default=1)

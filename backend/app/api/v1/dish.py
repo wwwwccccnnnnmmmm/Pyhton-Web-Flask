@@ -1,6 +1,7 @@
 from flask import Blueprint,request
 from ...models import Dish
 from ...extensions import db
+from ...utils import admin_required,token_required
 
 dish_bp = Blueprint("dish",__name__)
 
@@ -52,7 +53,9 @@ def get_dishes():
 
 # 添加菜品
 @dish_bp.route("",methods=["POST"])
-def create_dish():
+@admin_required
+@token_required
+def create_dish(current_user_id):
     
     '''
     请求体：
@@ -99,7 +102,9 @@ def create_dish():
 
 # 更新菜品
 @dish_bp.route("/<int:dish_id>",methods=["PATCH"])
-def update_dish(dish_id):
+@admin_required
+@token_required
+def update_dish(current_user_id,dish_id):
     dish = Dish.query.get(dish_id)
     
     if not dish:
@@ -144,7 +149,9 @@ def update_dish(dish_id):
    
 # 删除菜品
 @dish_bp.route("/<int:dish_id>",methods=["DELETE"])
-def delete_dish(dish_id):
+@admin_required
+@token_required
+def delete_dish(current_user_id,dish_id):
     dish = Dish.query.get(dish_id)
     
     if not dish:

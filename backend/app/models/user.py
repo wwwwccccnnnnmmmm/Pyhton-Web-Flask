@@ -12,10 +12,10 @@ class User(db.Model):
     role=db.Column(db.String(20),nullable=False,default='customer')
     is_active=db.Column(db.Boolean, default=True)
    
-    created_at=db.Column(db.DateTime,default=datetime.now)
+    created_at=db.Column(db.DateTime,default=lambda: datetime.now())
     
     # onupdate=datetime.now更新记录时，自动将时间改为当前时间。
-    updated_at=db.Column(db.DateTime,default=datetime.now,onupdate=datetime.now)
+    updated_at=db.Column(db.DateTime,default=lambda: datetime.now(),onupdate=lambda: datetime.now())
     
     # 关联菜品表
     dishes = db.relationship("Dish",back_populates='creator',lazy=True)

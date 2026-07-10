@@ -2,7 +2,7 @@ from flask import Blueprint,request
 from ...models import User,Profile
 from werkzeug.security import check_password_hash,generate_password_hash
 from ...extensions import db
-
+from ...utils import generate_token,token_required
 
 auth_bp = Blueprint('auth',__name__)
 
@@ -34,16 +34,13 @@ def login():
     if not user or not check_password_hash(user.password_hash,password):
         return {"error":"用户名或密码错误"},401
 
+    token = generate_token(user.id)
+    
     # 成功的话则创建jwt token 等
     return {
-        "access_token":"token",
+        "access_token":token,
         "token_type":"Bearer",
-        "user":{
-            "id":user.id,
-            "username":user.username,
-            "role":user.role
-            
-        }
+        "user":user.to_dict()
     },200
 
 
@@ -125,6 +122,11 @@ def logout():
 
 # 我的信息
 @auth_bp.route("/me",methods=["GET"])
-def get_current_user():
-    pass
+@token_required
+def get_current_user(current_user_id):
+    user = User.query.get(current_user_id)
+    if not user:
+        return {"error":"用户不存在"},404
+    
+    return user.to_dict(),200
     

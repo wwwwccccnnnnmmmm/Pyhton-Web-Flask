@@ -36,9 +36,9 @@ def create_user():
         return {"error":"请输入用户名和密码"},400
     # 格式校验
     if len(username)<3:
-        return {"error":"用户名小于3个字符"},400
+        return {"error":"用户名小于3个字符"},422
     if len(password)<6:
-        return {"error":"密码长度至少6位"},400
+        return {"error":"密码长度至少6位"},422
     
     #唯一性校验
     existing = User.query.filter_by(username=username).first()

@@ -1,7 +1,26 @@
-from flask import Blueprint,request
+from flask import Blueprint,request,current_app
 from ...models import Dish
 from ...extensions import db
 from ...utils import admin_required,token_required
+from pathlib import Path
+from werkzeug.utils import secure_filename
+from datetime import datetime
+
+# 允许上传的文件类型
+ALLOWED_EXTENSIONS ={"png","jpg","gif","jpeg"}
+
+# backend 文件路径
+base_dir = Path(current_app.root_path).parent
+
+#菜品上传文件路径
+dish_img_dir= base_dir / 'static' / 'uploads' / 'dishes'
+dish_img_dir.mkdir(parents=True,exist_ok=True)
+
+
+# 检测
+def allowed_file(filename):
+    '''检查文件扩展名是否允许'''
+    return "." in filename and filename.rsplit(".",1)[1].lower() in ALLOWED_EXTENSIONS
 
 dish_bp = Blueprint("dish",__name__)
 
@@ -146,7 +165,60 @@ def update_dish(current_user_id,dish_id):
     
     return dish.to_dict(),200
     
-   
+# 上传菜品图
+@dish_bp.route("/upload_image",methods=["POST"])
+@admin_required
+@token_required
+def upload_dish_image(current_user_id):
+    
+    '''
+    上传菜品图片
+    请求体：form-data,字段名file
+    返回{"img_url":"/static/uploads/XXXXX.jpg"}
+    '''
+    
+    MAX_FILE_SIZE = 2 * 1024 * 1024  # 2MB
+    
+    # 1.获取文件
+    if 'file' not in request.files:
+        return {"error":"没有文件上传"},400
+    
+    file = request.files["file"]
+    
+    if file.filename =="":
+        return {"error":"文件名不能为空"},400
+
+    # 校验文件类型（jpg,png)
+    if not allowed_file(file.filename):
+        return {"error":"只支持jpg/gif/jpeg/png格式"},400
+    
+    if request.content_length and request.content_length > MAX_FILE_SIZE:
+        return {"error": f"文件大小超过限制，最大支持 {MAX_FILE_SIZE // (1024*1024)}MB"}, 413
+
+    # 获取文件扩展名
+    original_ext = file.filename.rsplit(".",1)[1].lower()
+    
+    name_part = secure_filename(file.filename).rsplit('.',1)[0]
+    # 生成安全名称
+    safe_filename =f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{name_part}.{original_ext}"
+ 
+    # 保存到static/uploads
+    file_path = dish_img_dir / safe_filename
+    
+    try:
+        file.save(str(file_path))
+    except Exception as e:
+        return {"error":f"文件保存失败:{str(e)}"},500
+    
+    # 返回图片URL
+    img_url = f"/static/uploads/dishes/{safe_filename}"
+    
+    return {
+        "message":"上传成功",
+        "img_url":img_url,
+        "filename":safe_filename
+    },201
+    
 # 删除菜品
 @dish_bp.route("/<int:dish_id>",methods=["DELETE"])
 @admin_required

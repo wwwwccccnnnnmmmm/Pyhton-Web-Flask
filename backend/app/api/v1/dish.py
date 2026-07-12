@@ -9,14 +9,6 @@ from datetime import datetime
 # 允许上传的文件类型
 ALLOWED_EXTENSIONS ={"png","jpg","gif","jpeg"}
 
-# backend 文件路径
-base_dir = Path(current_app.root_path).parent
-
-#菜品上传文件路径
-dish_img_dir= base_dir / 'static' / 'uploads' / 'dishes'
-dish_img_dir.mkdir(parents=True,exist_ok=True)
-
-
 # 检测
 def allowed_file(filename):
     '''检查文件扩展名是否允许'''
@@ -178,6 +170,12 @@ def upload_dish_image(current_user_id):
     '''
     
     MAX_FILE_SIZE = 2 * 1024 * 1024  # 2MB
+    
+    # backend 文件路径
+    base_dir = Path(current_app.root_path).parent
+    #菜品上传文件路径
+    dish_img_dir= base_dir / 'static' / 'uploads' / 'dishes'
+    dish_img_dir.mkdir(parents=True,exist_ok=True)
     
     # 1.获取文件
     if 'file' not in request.files:

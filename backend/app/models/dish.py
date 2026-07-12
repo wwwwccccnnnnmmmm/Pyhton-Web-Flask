@@ -17,6 +17,9 @@ class Dish(db.Model):
     # 库存
     dish_number = db.Column(db.Integer,nullable=False, default=0)
     
+    # 菜品图
+    dish_img = db.Column(db.String(255),nullable=True)
+    
     # 是否卖完
     is_sold_out=db.Column(db.Boolean, default=False)
     
@@ -45,6 +48,7 @@ class Dish(db.Model):
             "dish_name":self.dish_name,
             "price":str(self.price),
             "dish_number":self.dish_number,
+            "dish_img":self.dish_img,
             "is_sold_out":self.is_sold_out,
             "created_at":self.created_at.isoformat() if self.created_at else None,
             "updated_at":self.updated_at.isoformat() if self.updated_at else None

@@ -53,10 +53,10 @@ def init_db_command():
    
 
     # 4. 为 admin 创建几道菜
-    dish1 = Dish(dish_name='红烧肉', price=58.0, dish_number=20)
-    dish2 = Dish(dish_name='清蒸鲈鱼', price=68.0, dish_number=15)
-    dish3 = Dish(dish_name='麻婆豆腐', price=28.0, dish_number=30)
-    dish4 =Dish(dish_name='酸辣土豆丝', price=18.0, dish_number=50)
+    dish1 = Dish(dish_name='红烧肉', price=58.0,category="荤菜",dish_number=20)
+    dish2 = Dish(dish_name='清蒸鲈鱼', price=68.0, category="荤菜",dish_number=15)
+    dish3 = Dish(dish_name='麻婆豆腐', price=28.0, category="素菜",dish_number=30)
+    dish4 =Dish(dish_name='酸辣土豆丝', price=18.0,category="素菜", dish_number=50)
     zhangsan.dishes.append(dish1)
     zhangsan.dishes.append(dish2)
     zhangsan.dishes.append(dish3)

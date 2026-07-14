@@ -20,6 +20,8 @@ class Dish(db.Model):
     # 菜品图
     dish_img = db.Column(db.String(255),nullable=True)
     
+    # 分类
+    category = db.Column(db.String(20),nullable=True)
     # 是否卖完
     is_sold_out=db.Column(db.Boolean, default=False)
     
@@ -47,6 +49,7 @@ class Dish(db.Model):
             "id":self.id,
             "dish_name":self.dish_name,
             "price":str(self.price),
+            "category":self.category,
             "dish_number":self.dish_number,
             "dish_img":self.dish_img,
             "is_sold_out":self.is_sold_out,

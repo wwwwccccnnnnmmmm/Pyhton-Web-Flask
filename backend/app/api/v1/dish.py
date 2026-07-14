@@ -139,7 +139,11 @@ def update_dish(current_user_id,dish_id):
         except ValueError:
             return {"error":"价格必须是数字"},400
         
+    if 'category' in data:
+       
+        dish.category = data["category"]
         
+            
     if 'dish_number' in data:
         try:
             dish.dish_number = int(data["dish_number"])

@@ -1,7 +1,7 @@
 from flask import Flask,request
 from .config import Config
 from .api.v1 import user_bp,auth_bp,dish_bp,order_bp
-from .extensions import db
+from .extensions import db,migrate
 from .cli import init_app as init_cli
 from flask_cors import CORS
 import logging
@@ -18,6 +18,9 @@ def create_app():
     
     # 将之前定义好的 db 扩展实例，绑定到当前创建的 app 实例上
     db.init_app(app)
+    
+    #绑定数据库和应用
+    migrate.init_app(app,db)
     
     # 蓝图注册
     app.register_blueprint(user_bp, url_prefix='/api/v1/users')

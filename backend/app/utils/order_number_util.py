@@ -8,4 +8,3 @@ def generate_order_number():
     random_part = str(random.randint(100,999))
     
     return now_part+random_part 
-    

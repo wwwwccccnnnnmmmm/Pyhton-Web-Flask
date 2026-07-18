@@ -1,3 +1,4 @@
+from decimal import Decimal
 from flask import Blueprint,request
 from ...extensions import db
 from ...models import Order,Dish
@@ -7,9 +8,9 @@ order_bp = Blueprint("order",__name__)
 
 # 获取订单
 @order_bp.route("/<int:order_id>",methods=["GET"])
-@admin_required
 @token_required
-def get_order(order_id):
+@admin_required
+def get_order(current_user_id,order_id):
     
     order = Order.query.get(order_id)
     if not order:
@@ -40,9 +41,9 @@ def get_my_orders(current_user_id):
     
 # 获取所有订单
 @order_bp.route("",methods=["GET"])
-@admin_required
 @token_required
-def get_orders():
+@admin_required
+def get_orders(current_user_id):
     
     # 获取分页参数
     page = request.args.get("page",1,type=int)
@@ -50,15 +51,14 @@ def get_orders():
     
     # 获取过滤参数
     keyword=request.args.get("keyword","").strip()
-    is_finished_str = request.args.get("is_finished")
+    status = request.args.get("status","").strip()
     
     # 构建查询
     query = Order.query
     if keyword:
         query = query.filter(Order.order_number.contains(keyword))
-    if is_finished_str is not None:
-        is_finished = is_finished_str.lower() in ('true','1')
-        query = query.filter_by(is_finished=is_finished)
+    if status:
+        query = query.filter_by(status=status)
     
     #分页执行
     paginated = query.order_by(Order.id.desc()).paginate(page=page,per_page=per_page,error_out=False)
@@ -136,7 +136,7 @@ def create_order(current_user_id):
             return {"error":"资源不存在"},404
     
     dish_object = []
-    total_price = 0.0
+    total_price = Decimal("0.00")
     
     # 遍历菜品进行价格相加
     for item in dishes_data:
@@ -163,9 +163,9 @@ def create_order(current_user_id):
 
 # 修改订单
 @order_bp.route("/<int:order_id>",methods=["PATCH"])
-@admin_required
 @token_required
-def update_order(order_id):
+@admin_required
+def update_order(current_user_id,order_id):
     order = Order.query.get(order_id)
     
     if not order:
@@ -220,14 +220,14 @@ def canceled_order(current_user_id,order_id):
         return {"error":"无权操作此订单"},403
     if order.status !='pending':
         return {"error":"只有待付款订单可以取消"},400
-    order.status = 'calcened'
+    order.status = 'canceled'
     db.session.commit()
     return {"message":"该订单已取消"},200
 
 # 删除订单
 @order_bp.route("/<int:order_id>",methods=["DELETE"])
 @token_required
-def delete_order(order_id):
+def delete_order(current_user_id,order_id):
     order = Order.query.get(order_id)
     
     if not order:

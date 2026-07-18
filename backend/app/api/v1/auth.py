@@ -109,10 +109,7 @@ def register():
     
     return {
         "message":"用户创建成功",
-        "user":{
-            user.to_dict()
-        
-    }
+        "user":user.to_dict()
         },201
     
 # 登出功能

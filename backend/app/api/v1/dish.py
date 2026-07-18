@@ -64,8 +64,8 @@ def get_dishes():
 
 # 添加菜品
 @dish_bp.route("",methods=["POST"])
-@admin_required
 @token_required
+@admin_required
 def create_dish(current_user_id):
     
     '''
@@ -113,8 +113,8 @@ def create_dish(current_user_id):
 
 # 更新菜品
 @dish_bp.route("/<int:dish_id>",methods=["PATCH"])
-@admin_required
 @token_required
+@admin_required
 def update_dish(current_user_id,dish_id):
     dish = Dish.query.get(dish_id)
     
@@ -163,8 +163,8 @@ def update_dish(current_user_id,dish_id):
     
 # 上传菜品图
 @dish_bp.route("/upload_image",methods=["POST"])
-@admin_required
 @token_required
+@admin_required
 def upload_dish_image(current_user_id):
     
     '''
@@ -223,8 +223,8 @@ def upload_dish_image(current_user_id):
     
 # 删除菜品
 @dish_bp.route("/<int:dish_id>",methods=["DELETE"])
-@admin_required
 @token_required
+@admin_required
 def delete_dish(current_user_id,dish_id):
     dish = Dish.query.get(dish_id)
     

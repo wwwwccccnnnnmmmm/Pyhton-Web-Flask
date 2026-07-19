@@ -1,3 +1,4 @@
+from decimal import Decimal
 from flask import Blueprint,request
 from ...extensions import db
 from ...models import Order,Dish
@@ -43,7 +44,6 @@ def get_my_orders(current_user_id):
 @order_bp.route("",methods=["GET"])
 @token_required
 @admin_required
-
 def get_orders(current_user_id):
     
     # 获取分页参数
@@ -52,15 +52,14 @@ def get_orders(current_user_id):
     
     # 获取过滤参数
     keyword=request.args.get("keyword","").strip()
-    is_finished_str = request.args.get("is_finished")
+    status = request.args.get("status","").strip()
     
     # 构建查询
     query = Order.query
     if keyword:
         query = query.filter(Order.order_number.contains(keyword))
-    if is_finished_str is not None:
-        is_finished = is_finished_str.lower() in ('true','1')
-        query = query.filter_by(is_finished=is_finished)
+    if status:
+        query = query.filter_by(status=status)
     
     #分页执行
     paginated = query.order_by(Order.id.desc()).paginate(page=page,per_page=per_page,error_out=False)
@@ -139,7 +138,6 @@ def create_order(current_user_id):
     
     dish_object = []
     total_price = Decimal(0.0)
-    
     # 遍历菜品进行价格相加
     for item in dishes_data:
         dish_name = item.get("dish_name","").strip()
@@ -223,7 +221,7 @@ def canceled_order(current_user_id,order_id):
         return {"error":"无权操作此订单"},403
     if order.status !='pending':
         return {"error":"只有待付款订单可以取消"},400
-    order.status = 'calcened'
+    order.status = 'canceled'
     db.session.commit()
     return {"message":"该订单已取消"},200
 

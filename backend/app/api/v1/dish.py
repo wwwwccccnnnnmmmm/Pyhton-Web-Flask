@@ -115,7 +115,6 @@ def create_dish(current_user_id):
 @dish_bp.route("/<int:dish_id>",methods=["PATCH"])
 @token_required
 @admin_required
-
 def update_dish(current_user_id,dish_id):
     dish = Dish.query.get(dish_id)
     
@@ -166,9 +165,7 @@ def update_dish(current_user_id,dish_id):
 @dish_bp.route("/<int:dish_id>/upload_image",methods=["POST"])
 @token_required
 @admin_required
-
 def upload_dish_image(current_user_id,dish_id):
-    
     '''
     上传菜品图片
     请求体：form-data,字段名file
@@ -233,7 +230,6 @@ def upload_dish_image(current_user_id,dish_id):
 @dish_bp.route("/<int:dish_id>",methods=["DELETE"])
 @token_required
 @admin_required
-
 def delete_dish(current_user_id,dish_id):
     dish = Dish.query.get(dish_id)
     

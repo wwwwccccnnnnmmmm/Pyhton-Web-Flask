@@ -11,7 +11,6 @@ user_bp = Blueprint('user',__name__)
 @user_bp.route("",methods=["POST"])
 @token_required
 @admin_required
-
 def create_user(current_user_id):
     '''
     后台创建用户
@@ -51,7 +50,7 @@ def create_user(current_user_id):
     # 职位是否不对
     allow_roles=["waiter","customer"]
     if role not in allow_roles:
-        return {"error":f"职位必须是{",".join(allow_roles)}其中之一"},422
+        return {"error":f"职位必须是{'，'.join(allow_roles)}其中之一"},422
     
     # 密码哈希
     hash_password = generate_password_hash(password)
@@ -75,7 +74,6 @@ def create_user(current_user_id):
 @user_bp.route("/<int:user_id>",methods=["GET"])
 @token_required
 @admin_required
-
 def get_user(current_user_id,user_id):
     
     user = User.query.filter_by(id=user_id).first()
@@ -89,7 +87,6 @@ def get_user(current_user_id,user_id):
 @user_bp.route("",methods=["GET"])
 @token_required
 @admin_required
-
 def get_users(current_user_id):
     
     # 获取分页参数
@@ -130,7 +127,6 @@ def get_users(current_user_id):
 @user_bp.route("/<int:user_id>",methods=["DELETE"])
 @token_required
 @admin_required
-
 def delete_user_by_id(current_user_id,user_id):
     user = User.query.filter_by(id=user_id).first()
     
@@ -152,7 +148,6 @@ def delete_user_by_id(current_user_id,user_id):
 @user_bp.route("/<int:user_id>",methods=["PATCH"])
 @token_required
 @admin_required
-
 def update_user(current_user_id,user_id):
     user = User.query.filter_by(id=user_id).first()
     

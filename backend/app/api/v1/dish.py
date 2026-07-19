@@ -64,8 +64,8 @@ def get_dishes():
 
 # 添加菜品
 @dish_bp.route("",methods=["POST"])
-@admin_required
 @token_required
+@admin_required
 def create_dish(current_user_id):
     
     '''
@@ -113,8 +113,9 @@ def create_dish(current_user_id):
 
 # 更新菜品
 @dish_bp.route("/<int:dish_id>",methods=["PATCH"])
-@admin_required
 @token_required
+@admin_required
+
 def update_dish(current_user_id,dish_id):
     dish = Dish.query.get(dish_id)
     
@@ -162,10 +163,11 @@ def update_dish(current_user_id,dish_id):
     return dish.to_dict(),200
     
 # 上传菜品图
-@dish_bp.route("/upload_image",methods=["POST"])
-@admin_required
+@dish_bp.route("/<int:dish_id>/upload_image",methods=["POST"])
 @token_required
-def upload_dish_image(current_user_id):
+@admin_required
+
+def upload_dish_image(current_user_id,dish_id):
     
     '''
     上传菜品图片
@@ -180,6 +182,10 @@ def upload_dish_image(current_user_id):
     #菜品上传文件路径
     dish_img_dir= base_dir / 'static' / 'uploads' / 'dishes'
     dish_img_dir.mkdir(parents=True,exist_ok=True)
+    
+    dish = Dish.query.get(dish_id)
+    if not dish:
+        return {"error":"资源不存在"},404
     
     # 1.获取文件
     if 'file' not in request.files:
@@ -214,6 +220,8 @@ def upload_dish_image(current_user_id):
     
     # 返回图片URL
     img_url = f"/static/uploads/dishes/{safe_filename}"
+    dish.dish_img = img_url
+    db.session.commit()
     
     return {
         "message":"上传成功",
@@ -223,8 +231,9 @@ def upload_dish_image(current_user_id):
     
 # 删除菜品
 @dish_bp.route("/<int:dish_id>",methods=["DELETE"])
-@admin_required
 @token_required
+@admin_required
+
 def delete_dish(current_user_id,dish_id):
     dish = Dish.query.get(dish_id)
     

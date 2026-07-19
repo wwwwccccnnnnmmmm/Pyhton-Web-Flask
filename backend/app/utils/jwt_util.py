@@ -24,6 +24,7 @@ def token_required(f):
     '''
     @wraps(f)
     def decorated(*args,**kwargs):
+        print("token_required called")
         # 获取请求头中的Authorization
         auth_header = request.headers.get('Authorization')
         if not auth_header or not auth_header.startswith("Bearer "):

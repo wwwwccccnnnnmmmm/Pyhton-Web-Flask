@@ -31,11 +31,6 @@ class Dish(db.Model):
     # 更新时间
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(), onupdate=lambda: datetime.now())
 
-    # 外键 关联user表
-    user_id = db.Column(db.Integer,db.ForeignKey('users.id'),nullable=False, default=1)
-    
-    creator = db.relationship("User",back_populates='dishes',lazy=True)
-    
     # 关联order表
     orders = db.relationship('Order',secondary=order_dish_table,back_populates='dishes',lazy=True)
     # 让 Python 打印对象时显示可读信息。

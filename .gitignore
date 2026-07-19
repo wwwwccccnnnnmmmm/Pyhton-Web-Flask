@@ -13,7 +13,12 @@ __pycache__/
 .vscode/
 .idea/
 
+# 环境变量
+.env
+.flaskenv
+
 # 日志和数据库
 *.log
 *.db
 *.sqlite3
+logs/

@@ -2,14 +2,15 @@ from flask import Blueprint,request
 from ...extensions import db
 from ...models import Order,Dish
 from ...utils import generate_order_number,token_required,admin_required
+from decimal import Decimal
 
 order_bp = Blueprint("order",__name__)
 
 # 获取订单
 @order_bp.route("/<int:order_id>",methods=["GET"])
-@admin_required
 @token_required
-def get_order(order_id):
+@admin_required
+def get_order(current_user_id,order_id):
     
     order = Order.query.get(order_id)
     if not order:
@@ -40,9 +41,10 @@ def get_my_orders(current_user_id):
     
 # 获取所有订单
 @order_bp.route("",methods=["GET"])
-@admin_required
 @token_required
-def get_orders():
+@admin_required
+
+def get_orders(current_user_id):
     
     # 获取分页参数
     page = request.args.get("page",1,type=int)
@@ -136,7 +138,7 @@ def create_order(current_user_id):
             return {"error":"资源不存在"},404
     
     dish_object = []
-    total_price = 0.0
+    total_price = Decimal(0.0)
     
     # 遍历菜品进行价格相加
     for item in dishes_data:
@@ -163,9 +165,10 @@ def create_order(current_user_id):
 
 # 修改订单
 @order_bp.route("/<int:order_id>",methods=["PATCH"])
-@admin_required
 @token_required
-def update_order(order_id):
+@admin_required
+
+def update_order(current_user_id,order_id):
     order = Order.query.get(order_id)
     
     if not order:
@@ -227,7 +230,7 @@ def canceled_order(current_user_id,order_id):
 # 删除订单
 @order_bp.route("/<int:order_id>",methods=["DELETE"])
 @token_required
-def delete_order(order_id):
+def delete_order(current_user_id,order_id):
     order = Order.query.get(order_id)
     
     if not order:

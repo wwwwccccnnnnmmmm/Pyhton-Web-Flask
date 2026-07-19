@@ -39,6 +39,7 @@ class Order(db.Model):
     # 转化成字典
     def to_dict(self):
         return{
+            "id":self.id,
             "order_number":self.order_number,
             "total_price":str(self.total_price) if self.total_price else "0.00",
             "status":self.status,

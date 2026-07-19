@@ -109,10 +109,7 @@ def register():
     
     return {
         "message":"用户创建成功",
-        "user":{
-            user.to_dict()
-        
-    }
+        "user":user.to_dict()
         },201
     
 # 登出功能
@@ -129,4 +126,49 @@ def get_current_user(current_user_id):
         return {"error":"用户不存在"},404
     
     return user.to_dict(),200
+
+# 我的信息
+@auth_bp.route("/me",methods=["PATCH"])
+@token_required
+def update_profile(current_user_id):
+    user = db.session.get(User,current_user_id)
+    
+    if not user:
+        return {"error":"用户不存在"},404
+    data = request.get_json()
+    if not data:
+        return {"error":"请求体必须为json格式"},400
+    
+    if not user.profile:
+        user.profile = Profile()
+        db.session.add(user.profile)
+        
+    if "real_name" in data:
+        new_name = data["real_name"] .strip()
+        if not new_name:
+            return {"error":"真实姓名不能为空"},400
+        user.profile.real_name = new_name
+        
+    if "email" in data:
+        new_email = data["email"].strip()
+        if db.session.query(Profile).filter(Profile.email==new_email,Profile.user_id !=current_user_id).first():
+            return {"error":"此邮箱已存在"},409
+        user.profile.email = new_email
+        
+    if "phone" in data:
+        new_phone = data["phone"].strip()
+        if db.session.query(Profile).filter(Profile.phone==new_phone,Profile.user_id!=current_user_id).first():
+            return {"error":"此手机号码已存在"},409
+        user.profile.phone = new_phone
+        
+    if "avatar_url" in data:
+        user.profile.avatar_url = data["avatar_url"].strip()
+
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return {"error":"服务器内部错误"},500
+    
+    return user.profile.to_dict(),200
     

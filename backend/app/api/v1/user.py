@@ -9,9 +9,10 @@ user_bp = Blueprint('user',__name__)
 
 # 新建用户
 @user_bp.route("",methods=["POST"])
-@admin_required
 @token_required
-def create_user():
+@admin_required
+
+def create_user(current_user_id):
     '''
     后台创建用户
     请求体
@@ -68,16 +69,14 @@ def create_user():
     except Exception as e:
         return {"error":f"服务器内部错误{e}"}
     
-    return {
-        "message":"用户创建成功",
-        "user":user.to_dict()
-        
-    },201
+    return user.to_dict(),201
+
 # 获取用户
 @user_bp.route("/<int:user_id>",methods=["GET"])
-@admin_required
 @token_required
-def get_user(user_id):
+@admin_required
+
+def get_user(current_user_id,user_id):
     
     user = User.query.filter_by(id=user_id).first()
     
@@ -88,9 +87,10 @@ def get_user(user_id):
 
 # 获取所有用户
 @user_bp.route("",methods=["GET"])
-@admin_required
 @token_required
-def get_users():
+@admin_required
+
+def get_users(current_user_id):
     
     # 获取分页参数
     page = request.args.get("page",1,type=int)
@@ -128,9 +128,10 @@ def get_users():
     
 # 删除用户
 @user_bp.route("/<int:user_id>",methods=["DELETE"])
-@admin_required
 @token_required
-def delete_user_by_id(user_id):
+@admin_required
+
+def delete_user_by_id(current_user_id,user_id):
     user = User.query.filter_by(id=user_id).first()
     
     if not user:
@@ -149,9 +150,10 @@ def delete_user_by_id(user_id):
 
 # 修改用户
 @user_bp.route("/<int:user_id>",methods=["PATCH"])
-@admin_required
 @token_required
-def update_user(user_id):
+@admin_required
+
+def update_user(current_user_id,user_id):
     user = User.query.filter_by(id=user_id).first()
     
     if not user:
